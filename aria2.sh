@@ -7,7 +7,7 @@ export PATH
 #	Description: Aria2
 #	Version: 1.1.10
 #	Author: Toyo
-#	Blog: https://doub.io/shell-jc4/
+#	Blog: https://www.fncat.com/
 #=================================================
 sh_ver="1.1.10"
 filepath=$(cd "$(dirname "$0")"; pwd)
