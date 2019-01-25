@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+# tomcat startup script for the Tomcat server
+#
+#
+# chkconfig: 345 80 20
+# description: start the tomcat deamon
+#
+# Source function library
+. /etc/rc.d/init.d/functions
+
+prog=tomcat
+# 根据自己的路径改写JAVA_HOME
+JAVA_HOME=/opt/jdk1.8.0_191/
+export JAVA_HOME
+# 根据自己的路径改写CATALANA_HOME
+CATALANA_HOME=/opt/apache-tomcat-9.0.14/
+export CATALINA_HOME
+
+case "$1" in
+start)
+    echo "Starting Tomcat..."
+    $CATALANA_HOME/bin/startup.sh
+    ;;
+
+stop)
+    echo "Stopping Tomcat..."
+    $CATALANA_HOME/bin/shutdown.sh
+    ;;
+
+restart)
+    echo "Stopping Tomcat..."
+    $CATALANA_HOME/bin/shutdown.sh
+    sleep 2
+    echo
+    echo "Starting Tomcat..."
+    $CATALANA_HOME/bin/startup.sh
+    ;;
+
+*)
+    echo "Usage: $prog {start|stop|restart}"
+    ;;
+esac
+exit 0
