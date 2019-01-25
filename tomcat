@@ -1,44 +1,60 @@
-#!/bin/bash
-#
-# tomcat startup script for the Tomcat server
-#
-#
-# chkconfig: 345 80 20
-# description: start the tomcat deamon
-#
-# Source function library
-. /etc/rc.d/init.d/functions
-
-prog=tomcat
-# 根据自己的路径改写JAVA_HOME
-JAVA_HOME=/opt/jdk1.8.0_191/
-export JAVA_HOME
-# 根据自己的路径改写CATALANA_HOME
-CATALANA_HOME=/opt/apache-tomcat-9.0.14/
-export CATALINA_HOME
+#!/bin/sh
+# chkconfig: 345 99 10
+# description: Auto-starts tomcat
+# /etc/init.d/tomcatd
+# Tomcat auto-start
+# Source function library.
+#. /etc/init.d/functions
+# source networking configuration.
+#. /etc/sysconfig/network
+RETVAL=0
+export JAVA_HOME=/opt/jdk1.8.0_191/
+export JRE_HOME=/opt/jdk1.8.0_191/jre
+export CATALINA_HOME=/opt/apache-tomcat-9.0.14/
+export CATALINA_BASE=/opt/apache-tomcat-9.0.14/
+start()
+{
+        if [ -f $CATALINA_HOME/bin/startup.sh ];
+          then
+            echo $"Starting Tomcat_test"
+                $CATALINA_HOME/bin/startup.sh
+            RETVAL=$?
+            echo " OK"
+            return $RETVAL
+        fi
+}
+stop()
+{
+        if [ -f $CATALINA_HOME/bin/shutdown.sh ];
+          then
+            echo $"Stopping Tomcat_test"
+                $CATALINA_HOME/bin/shutdown.sh
+            RETVAL=$?
+            sleep 1
+            ps -fu root | grep apache-tomcat-9.0.14 | grep -v grep | grep -v PID | awk '{print $2}'|xargs kill -9
+            echo " OK"
+            # [ $RETVAL -eq 0 ] && rm -f /var/lock/...
+            return $RETVAL
+        fi
+}
 
 case "$1" in
-start)
-    echo "Starting Tomcat..."
-    $CATALANA_HOME/bin/startup.sh
-    ;;
+ start)
+        start
+        ;;
+ stop)
+        stop
+        ;;
 
-stop)
-    echo "Stopping Tomcat..."
-    $CATALANA_HOME/bin/shutdown.sh
-    ;;
-
-restart)
-    echo "Stopping Tomcat..."
-    $CATALANA_HOME/bin/shutdown.sh
-    sleep 2
-    echo
-    echo "Starting Tomcat..."
-    $CATALANA_HOME/bin/startup.sh
-    ;;
-
-*)
-    echo "Usage: $prog {start|stop|restart}"
-    ;;
+ restart)
+         echo $"Restaring Tomcat"
+         $0 stop
+         sleep 1
+         $0 start
+         ;;
+ *)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
 esac
-exit 0
+exit $RETVAL
